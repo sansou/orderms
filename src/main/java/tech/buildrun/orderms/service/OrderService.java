@@ -2,8 +2,11 @@ package tech.buildrun.orderms.service;
 
 import java.math.BigDecimal;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import tech.buildrun.orderms.controller.dto.OrderResponse;
 import tech.buildrun.orderms.entity.OrderEntity;
 import tech.buildrun.orderms.entity.OrderItem;
 import tech.buildrun.orderms.listener.dto.OrderCreatedEvent;
@@ -32,7 +35,7 @@ public class OrderService {
     entity.setItem(event.itens().stream()
         .map(i -> new OrderItem(i.produto(), i.quantidade(), i.preco()))
         .toList());
-    entity.setOrderAmount(calculateOrderAmount(event));
+    entity.setTotal(calculateOrderAmount(event));
     return entity;
   }
 
@@ -42,5 +45,10 @@ public class OrderService {
         .reduce(BigDecimal::add)
         .orElse(BigDecimal.ZERO);
 
+  }
+
+  public Page<OrderResponse> findAllByCustommerId(Long customerId, PageRequest pageRequest) {
+    var orders = orderRepository.findAllByCustomerId(customerId, pageRequest);
+    return orders.map(o -> new OrderResponse(o.orderId(), o.customerId(), o.total()));
   }
 }
