@@ -16,6 +16,12 @@ public class OrderItem {
   private BigDecimal price;
 
   
+  public OrderItem(String product, int quantity, BigDecimal price) {
+    this.product = product;
+    this.quantity = quantity;
+    this.price = price;
+  }
+
   public OrderItem() {
   }
 
