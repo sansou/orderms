@@ -35,7 +35,7 @@ public class OrderService {
     entity.setOrderAmount(calculateOrderAmount(event));
     return entity;
   }
-  
+
   private BigDecimal calculateOrderAmount(OrderCreatedEvent event) {
     return event.itens().stream()
         .map(i -> i.preco().multiply(new BigDecimal(i.quantidade())))

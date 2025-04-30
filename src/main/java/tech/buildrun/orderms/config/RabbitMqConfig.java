@@ -8,18 +8,18 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMqConfig {
-    // RabbitMQ configuration can be added here if needed
-    // For example, you can define RabbitTemplate, Queue, Exchange, etc.
-    public static final String ORDER_CREATED_QUEUE = "btg-pactual-order-created";
+  // RabbitMQ configuration can be added here if needed
+  // For example, you can define RabbitTemplate, Queue, Exchange, etc.
+  public static final String ORDER_CREATED_QUEUE = "btg-pactual-order-created";
 
-    @Bean
-    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
+  @Bean
+  public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
+    return new Jackson2JsonMessageConverter();
+  }
 
-    @Bean
-    public Declarable orderCreatedQueue(){
-      return new Queue(ORDER_CREATED_QUEUE);
-    }
+  @Bean
+  public Declarable orderCreatedQueue() {
+    return new Queue(ORDER_CREATED_QUEUE);
+  }
 
 }
