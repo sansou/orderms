@@ -2,9 +2,16 @@ package tech.buildrun.orderms.service;
 
 import java.math.BigDecimal;
 
+import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 
 import tech.buildrun.orderms.controller.dto.OrderResponse;
 import tech.buildrun.orderms.entity.OrderEntity;
@@ -14,6 +21,10 @@ import tech.buildrun.orderms.repository.OrderRepository;
 
 @Service
 public class OrderService {
+  
+  // não consegui fazer a injeção de dependência do MongoTemplate no construtor, então estou usando o @Autowired
+  @Autowired
+  private MongoTemplate mongoTemplate;
 
   private final OrderRepository orderRepository;
 
@@ -51,4 +62,15 @@ public class OrderService {
     var orders = orderRepository.findAllByCustomerId(customerId, pageRequest);
     return orders.map(o -> new OrderResponse(o.orderId(), o.customerId(), o.total()));
   }
+
+  public BigDecimal findTotalByCustomerId(Long customerId) {
+
+    var aggregations = newAggregation(
+        match(Criteria.where("customerId").is(customerId)),
+        group().sum("total").as("total"));
+
+    var result = mongoTemplate.aggregate(aggregations, "tb_orders", Document.class);
+    return  new BigDecimal( result.getUniqueMappedResult().get("total").toString());
+  }
+
 }
